@@ -1,6 +1,6 @@
 import { z } from 'nestjs-zod/z';
 
-export const createAgentSchema = z.object({
+export const createUserSchema = z.object({
   fullName: z.string(),
   email: z.string(),
   password: z.string(),
