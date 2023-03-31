@@ -41,7 +41,6 @@ export class UserController {
   }
 
   @Post('/create')
-  // using schema
   @UsePipes(new ZodValidationPipe(createUserSchema))
   @UseFilters(MongoExceptionFilter)
   async createUser(@Res() response, @Body() user: Users) {

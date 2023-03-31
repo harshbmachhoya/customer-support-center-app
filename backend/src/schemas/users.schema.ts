@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Roles } from './roles.schema';
+import { Cases } from './case.schema';
 
 export type UsersDocument = Users & Document;
 
@@ -19,6 +20,9 @@ export class Users {
 
   @Prop({ type: mongoose.Schema, ref: 'Roles' })
   role: Roles;
+
+  @Prop({ type: mongoose.Schema, ref: 'Cases' })
+  case: Cases;
 
   @Prop({ default: Date.now() })
   createdDate: Date;

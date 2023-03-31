@@ -6,3 +6,8 @@ export const createUserSchema = z.object({
   password: z.string(),
   role: z.object({ _id: z.string(), name: z.string() }),
 });
+
+export const createCaseSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+});
