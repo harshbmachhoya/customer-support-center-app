@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   HttpStatus,
+  Get,
   Post,
   Put,
   Query,
@@ -55,10 +56,18 @@ export class UserController {
     @Query('userId') userId: ObjectId,
     @Body(new ZodValidationPipe(createUserSchema)) user: Users,
   ) {
-    const updatedUser = await this.userServerice.updateUser(userId, user);
-    return response
-      .status(HttpStatus.OK)
-      .json({ message: 'User updated successfully.', updatedUser });
+    return await this.userServerice
+      .updateUser(userId, user)
+      .then((updatedUser) =>
+        response
+          .status(HttpStatus.OK)
+          .json({ message: 'User updated successfully.', updatedUser }),
+      )
+      .catch((err) => {
+        return response
+          .status(err.status)
+          .json({ statusCode: err.status, message: err.message });
+      });
   }
 
   @Delete('/delete')
@@ -68,5 +77,12 @@ export class UserController {
     return response
       .status(HttpStatus.OK)
       .json({ message: 'User deleted.', deletedUser });
+  }
+
+  @Get('/list')
+  @UseFilters(MongoExceptionFilter)
+  async listUser(@Res() response) {
+    const listUser = await this.userServerice.listUser();
+    return response.status(HttpStatus.OK).json({ users: listUser });
   }
 }

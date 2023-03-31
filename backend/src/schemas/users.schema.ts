@@ -6,6 +6,8 @@ export type UsersDocument = Users & Document;
 
 @Schema()
 export class Users {
+  _id: mongoose.ObjectId;
+
   @Prop({ required: true })
   fullName: string;
 
