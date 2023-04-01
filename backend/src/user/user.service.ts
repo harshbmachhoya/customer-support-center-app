@@ -85,8 +85,7 @@ export class UserService {
 
   async listUser(): Promise<Users[] | HttpException> {
     try {
-      const allUser = this.userModel.find();
-      return allUser;
+      return this.userModel.find();
     } catch (err) {
       return new HttpException(err, HttpStatus.NOT_IMPLEMENTED);
     }

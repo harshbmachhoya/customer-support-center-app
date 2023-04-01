@@ -1,11 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Roles } from './roles.schema';
-import { Cases } from './case.schema';
 
 export type UsersDocument = Users & Document;
 
-@Schema()
+export interface IUsers {
+  _id: mongoose.ObjectId;
+  fullName: string;
+  email: string;
+}
+
+@Schema({ timestamps: true })
 export class Users {
   _id: mongoose.ObjectId;
 
@@ -18,16 +23,16 @@ export class Users {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ type: mongoose.Schema, ref: 'Roles' })
+  @Prop({ type: mongoose.Schema, ref: 'Roles', default: {} })
   role: Roles;
 
-  @Prop({ type: mongoose.Schema, ref: 'Cases' })
-  case: Cases;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Cases' })
+  case: mongoose.ObjectId;
 
   @Prop({ default: Date.now() })
-  createdDate: Date;
+  createdAt: Date;
 
   @Prop({ default: Date.now() })
-  updatedDate: Date;
+  updatedAt: Date;
 }
 export const UsersSchema = SchemaFactory.createForClass(Users);

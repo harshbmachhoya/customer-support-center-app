@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { Users, UsersSchema } from './users.schema';
+import { IUsers, Users, UsersDocument, UsersSchema } from './users.schema';
 
 export type CasesDocument = Cases & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Cases {
   _id: mongoose.ObjectId;
 
@@ -14,16 +14,16 @@ export class Cases {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ type: UsersSchema })
-  supportAgent: Users;
+  @Prop({ type: Object, default: null })
+  supportAgent: IUsers;
 
   @Prop({ default: false })
   isResolved: boolean;
 
   @Prop({ default: Date.now() })
-  createdDate: Date;
+  createdAt: Date;
 
   @Prop({ default: Date.now() })
-  updatedDate: Date;
+  updatedAt: Date;
 }
 export const CasesSchema = SchemaFactory.createForClass(Cases);

@@ -81,7 +81,7 @@ export class UserController {
   @Get('/list')
   @UseFilters(MongoExceptionFilter)
   async listUser(@Res() response) {
-    const listUser = await this.userServerice.listUser();
-    return response.status(HttpStatus.OK).json({ users: listUser });
+    const allUsers = await this.userServerice.listUser();
+    return response.status(HttpStatus.OK).json({ users: allUsers });
   }
 }
