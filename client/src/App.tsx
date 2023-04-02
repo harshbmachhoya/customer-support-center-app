@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
-import Login from './components/User/LoginComponent';
-import CreateAgent from './components/User/CreateAgentComponent';
-import ListAgent from './components/User/ListAgentComponent';
+import Login from './components/User/Login';
+import CreateAgent from './components/Agent/CreateAgent';
+import ListAgent from './components/Agent/ListAgent';
 import { Route, Routes } from 'react-router-dom';
 
 function App() {
