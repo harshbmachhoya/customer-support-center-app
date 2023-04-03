@@ -72,10 +72,19 @@ export class UserController {
   @Delete('/delete')
   @UseFilters(MongoExceptionFilter)
   async deleteUser(@Res() response, @Query('userId') userId: ObjectId) {
-    const deletedUser = await this.userServerice.deleteUser(userId);
-    return response
-      .status(HttpStatus.OK)
-      .json({ message: 'User deleted.', deletedUser });
+    return await this.userServerice
+      .deleteUser(userId)
+      .then((deletedUser) =>
+        response
+          .status(HttpStatus.OK)
+          .json({ message: 'User deleted.', deletedUser }),
+      )
+      .catch((err) => {
+        console.log(err);
+        return response
+          .status(err.status)
+          .json({ statusCode: err.status, message: err.message });
+      });
   }
 
   @Get('/list')
@@ -83,5 +92,12 @@ export class UserController {
   async listUser(@Res() response) {
     const allUsers = await this.userServerice.listUser();
     return response.status(HttpStatus.OK).json({ users: allUsers });
+  }
+
+  @Get('/role')
+  @UseFilters(MongoExceptionFilter)
+  async roles(@Res() response) {
+    const roles = await this.userServerice.getRole();
+    return response.status(HttpStatus.OK).json({ roles: roles });
   }
 }

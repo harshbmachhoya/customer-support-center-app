@@ -1,12 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { Users, UsersDocument } from '../schemas';
+import { Roles, RolesDocument, Users, UsersDocument } from '../schemas';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(Users.name) private userModel: Model<UsersDocument>,
+    @InjectModel(Roles.name) private roleModel: Model<RolesDocument>,
   ) {}
 
   async login(user: Users): Promise<Users | HttpException> {
@@ -76,16 +77,27 @@ export class UserService {
 
   async deleteUser(userId: ObjectId): Promise<Users | HttpException> {
     try {
-      const deletedUser = this.userModel.findByIdAndRemove(userId);
-      return deletedUser;
+      const deletedUser = await this.userModel.findByIdAndRemove(userId);
+      if (!deletedUser || deletedUser === null) {
+        throw new HttpException('User not found!', HttpStatus.NOT_IMPLEMENTED);
+      } else {
+        return deletedUser;
+      }
     } catch (err) {
-      return new HttpException(err, HttpStatus.NOT_IMPLEMENTED);
+      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
     }
   }
 
   async listUser(): Promise<Users[] | HttpException> {
     try {
       return this.userModel.find();
+    } catch (err) {
+      return new HttpException(err, HttpStatus.NOT_IMPLEMENTED);
+    }
+  }
+  async getRole(): Promise<Roles[] | HttpException> {
+    try {
+      return this.roleModel.find();
     } catch (err) {
       return new HttpException(err, HttpStatus.NOT_IMPLEMENTED);
     }

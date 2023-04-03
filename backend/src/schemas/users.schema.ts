@@ -23,7 +23,7 @@ export class Users {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ type: mongoose.Schema, ref: 'Roles', default: {} })
+  @Prop({ type: mongoose.Schema, ref: 'Roles' })
   role: Roles;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Cases' })

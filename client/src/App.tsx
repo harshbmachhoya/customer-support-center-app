@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import Login from './components/User/Login';
-import CreateAgent from './components/Agent/CreateAgent';
+import AgentForm from './components/Agent/AgentForm';
 import ListAgent from './components/Agent/ListAgent';
 import { Route, Routes } from 'react-router-dom';
 
@@ -10,8 +10,8 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/admin" element={<CreateAgent />} />
-        <Route path="/admin/list" element={<ListAgent />} />
+        <Route path="/agent/create" element={<AgentForm />} />
+        <Route path="/agent/list" element={<ListAgent />} />
       </Routes>
     </div>
   );
