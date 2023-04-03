@@ -12,6 +12,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/agent/create" element={<AgentForm />} />
         <Route path="/agent/list" element={<ListAgent />} />
+        <Route path={`/agent/edit/:id`} element={<AgentForm />} />
+
       </Routes>
     </div>
   );

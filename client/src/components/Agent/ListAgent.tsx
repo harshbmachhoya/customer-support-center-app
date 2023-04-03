@@ -44,7 +44,10 @@ export default function ListAgent() {
         data,
     } = useFetchAgentList();
 
-    const onActionEdit = useCallback((value: IUser) => { console.log(value) }, []);
+    const onActionEdit = useCallback((row: IUser) => {
+        console.log(row)
+        navigate(`/agent/edit/${row._id}`, { state: row });
+    }, []);
     const onActionDelete = useCallback((id: string) => {
         fetch(`http://localhost:3000/user/delete?userId=${id}`, {
             method: 'DELETE',
@@ -87,7 +90,7 @@ export default function ListAgent() {
                 </Typography>
                 <br />
                 <Button variant="contained" size='small' onClick={() => handleCreate()}>Add New</Button>
-                <div style={{ height: 400 }}>
+                <div style={{ height: 400, width: '100%' }}>
                     <DataGrid
                         getRowId={rowId}
                         rows={rows}

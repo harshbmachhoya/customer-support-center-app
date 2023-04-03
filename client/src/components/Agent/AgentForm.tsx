@@ -1,55 +1,67 @@
-import React, { useCallback, useEffect } from 'react';
-import Avatar from '@mui/material/Avatar';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import { Form, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { userAPI } from '../../api/userAPI';
 import { IUser } from '../../interfaces/user';
-import { MenuItem, MenuList, Select } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 const theme = createTheme();
 
 export default function CreateAgent() {
     const navigate = useNavigate();
+    const [role, setRole] = useState('agent');
+    const { state } = useLocation();
+    let isAdd = true;
+    let formData = { fullName: '', email: '', password: '', role: '' };
+    if (state) {
+        isAdd = false;
+        formData = state;
+        console.log(state.role)
+        formData.role = state.role.name;
+        console.log(formData)
+    }
+
     const { data, refetch } = useQuery('getRoles', () => userAPI.getRoles());
-    console.log(data);
+
+    const handleChange = (event: any) => {
+        setRole(event.target.value);
+    };
 
     const createAgent = (formData: IUser) => userAPI.post(formData);
 
     const { mutateAsync } = useMutation(createAgent, {
         onSuccess: () => {
-            alert("Agent added successfully!")
+            alert("Agent added successfully!");
+            navigate('/agent/list')
         },
-        onError: () => {
-            alert("Something went wrong!");
-        }
+        // onError: (err) => {
+        //     alert("Something went wrong!" + err);
+        // }
     });
+    const getRoleObject = (name: string) => data?.find((obj) => obj.name === name);
 
-    // TODO: ADD CUSTOM HOOKS
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<IUser | unknown> => {
         try {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
+            const role = formData.get('role') as unknown as string;
             const reqBody = {
                 fullName: formData.get('fullName'),
                 email: formData.get('email'),
-                password: formData.get('password')
+                password: formData.get('password'),
+                role: getRoleObject(role),
             };
             console.log(reqBody)
-            const data = await mutateAsync(reqBody as IUser)
-            return data as unknown as IUser;
-
+            await mutateAsync(reqBody as unknown as IUser);
+            return;
         } catch (error) {
             alert("Something went wrong!");
         }
@@ -68,10 +80,9 @@ export default function CreateAgent() {
                     }}
                 >
                     <Typography component="h1" variant="h5">
-                        Add New Agent
+                        {isAdd ? 'Add Agent' : 'Edit Agent'}
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                        {/* <form onSubmit={() => handleSubmit}> */}
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField
@@ -81,6 +92,7 @@ export default function CreateAgent() {
                                     fullWidth
                                     id="fullName"
                                     label="Full Name"
+                                    value={formData.fullName}
                                     autoFocus
                                 />
                             </Grid>
@@ -92,6 +104,7 @@ export default function CreateAgent() {
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
+                                    value={formData.email}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -103,29 +116,33 @@ export default function CreateAgent() {
                                     type="password"
                                     id="password"
                                     autoComplete="new-password"
+                                    value={formData.password}
+                                    disabled={!isAdd}
                                 />
                             </Grid>
                             {data &&
                                 <Grid item xs={12}>
-                                    <Select
-                                        labelId="demo-multiple-name-label"
-                                        id="demo-multiple-name"
-                                        multiple
-                                        value={data}
-                                        label="Role"
-                                    // input={<OutlinedInput label="Name" />}
-                                    // MenuProps={MenuProps}
-                                    >
-                                        {data?.map((data, i) => (
-                                            <MenuItem
-                                                key={i}
-                                                value={data.name}
-                                            // style={getStyles(name, personName, theme)}
-                                            >
-                                                {data.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-standard-label">Role</InputLabel>
+                                        <Select
+                                            labelId="role"
+                                            name="role"
+                                            id="role"
+                                            value={isAdd ? role : formData.role}
+                                            label="Role"
+                                            onChange={isAdd ? handleChange : undefined}
+                                            disabled={!isAdd}
+                                        >
+                                            {data.map((data, i) => (
+                                                <MenuItem
+                                                    key={data._id}
+                                                    value={data.name}
+                                                >
+                                                    {data.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                             }
                         </Grid>
@@ -138,7 +155,6 @@ export default function CreateAgent() {
                         >
                             Save
                         </Button>
-                        {/* </form> */}
                         <Button
                             fullWidth
                             variant="contained"
@@ -147,7 +163,6 @@ export default function CreateAgent() {
                         >
                             Back To Agent List
                         </Button>
-                        {/* </form> */}
                     </Box>
 
                 </Box>

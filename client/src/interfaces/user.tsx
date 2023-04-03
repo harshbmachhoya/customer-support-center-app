@@ -3,6 +3,7 @@ export interface IUser {
     fullName: string;
     email: string;
     password: string;
+    role: { _id: string; name: string }
 }
 
 export interface IRoles {
