@@ -7,7 +7,7 @@ import { ICase } from '../interfaces/case';
 // User APIs
 export const userAPI = {
     login: async (req: ILogin): Promise<AxiosResponse<any, any>> => {
-        const data  = await apiQuery.post(`${endpoints.login}`, { ...req })
+        const data = await apiQuery.post(`${endpoints.login}`, { ...req })
         return data;
     },
     getUserList: async (): Promise<IUser[]> => {
@@ -18,8 +18,8 @@ export const userAPI = {
         const { data } = await apiQuery.post(`${endpoints.createUser}`, { ...req });
         return data;
     },
-    updateUser: async (userId: string): Promise<void> => {
-        const { data } = await apiQuery.put(`${endpoints.updateUser}?userId=${userId}`);
+    updateUser: async (userId: string, reqBody: IUser): Promise<void> => {
+        const { data } = await apiQuery.put(`${endpoints.updateUser}?userId=${userId}`, { ...reqBody });
         return data;
     },
     getRoles: async (): Promise<IRoles[]> => {

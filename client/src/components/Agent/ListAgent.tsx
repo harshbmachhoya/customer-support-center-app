@@ -8,6 +8,7 @@ import { useFetchAgentList } from './hooks/useFetchAgentList';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import useToken from '../User/hooks/useToken';
+import { baseURLs, endpoints } from '../../constants/api.constant';
 
 export default function ListAgent() {
     const navigate = useNavigate();
@@ -53,13 +54,13 @@ export default function ListAgent() {
     const onActionEdit = useCallback((row: IUser) => {
         console.log(row)
         navigate(`/agent/edit/${row._id}`, { state: row });
-    }, []);
+    }, [navigate]);
 
     const onActionDelete = useCallback((id: string) => {
-        fetch(`http://localhost:3000/user/delete?userId=${id}`, {
+        fetch(`${baseURLs.csc}${endpoints.deleteUser}?userId=${id}`, {
             method: 'DELETE',
         }).then(() => refetch())
-    }, []);
+    }, [refetch]);
 
     useEffect(() => {
         if (data) {

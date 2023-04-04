@@ -34,7 +34,7 @@ export class UserService {
     }
   }
 
-  async get(userId: ObjectId): Promise<Users> {
+  async getUser(userId: ObjectId): Promise<Users> {
     return (await this.userModel
       .findOne({ _id: userId })
       .exec()) as unknown as Users;
@@ -44,7 +44,7 @@ export class UserService {
     userId: ObjectId,
     user: Users,
   ): Promise<Users | HttpException> {
-    const userFound = await this.get(userId);
+    const userFound = await this.getUser(userId);
 
     if (!userFound || userFound === null) {
       throw new HttpException(

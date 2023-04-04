@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -22,48 +22,70 @@ export default function CreateAgent() {
     if (!token) {
         navigate('/login');
     }
+    const [userId, setUserId] = useState('');
     const [role, setRole] = useState('agent');
+    const [fullName, setFullName] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+
     const { state } = useLocation();
     let isAdd = true;
-    let formData = { fullName: null, email: null, password: null, role: null };
     if (state) {
         isAdd = false;
-        formData = state;
     }
+    useEffect(() => {
+        if (!isAdd) {
+            setUserId(state._id);
+            setFullName(state.fullName);
+            setEmail(state.email);
+            setPassword(state.password);
+            setRole(state.role.name);
+        }
+    }, [isAdd, state])
 
-    const { data, refetch } = useQuery('getRoles', () => userAPI.getRoles());
+    const { data } = useQuery('getRoles', () => userAPI.getRoles());
 
     const handleChange = (event: any) => {
         setRole(event.target.value);
     };
 
     const createAgent = (formData: IUser) => userAPI.createUser(formData);
+    const editAgent = (formData: IUser) => userAPI.updateUser(userId, formData);
 
     const { mutateAsync } = useMutation(createAgent, {
         onSuccess: (data) => {
             console.log('RES', data)
             alert("Agent added successfully!");
             navigate('/agent/list')
+        }
+    });
+
+    const { mutateAsync: editMutateAsync } = useMutation(editAgent, {
+        onSuccess: (data) => {
+            console.log('RES', data)
+            alert("Agent Updated successfully!");
+            navigate('/agent/list')
         },
         // onError: (err) => {
         //     alert("Something went wrong!" + err);
         // }
     });
+
     const getRoleObject = (name: string) => data?.find((obj) => obj.name === name);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<IUser | unknown> => {
         try {
             event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const role = formData.get('role') as unknown as string;
             const reqBody = {
-                fullName: formData.get('fullName'),
-                email: formData.get('email'),
-                password: formData.get('password'),
+                fullName: fullName,
+                email: email,
+                password: password,
                 role: getRoleObject(role),
             };
-            console.log(reqBody)
-            await mutateAsync(reqBody as unknown as IUser);
+
+            isAdd
+                ? await mutateAsync(reqBody as unknown as IUser)
+                : await editMutateAsync(reqBody as unknown as IUser);
             return;
         } catch (error) {
             alert("Something went wrong!");
@@ -95,7 +117,8 @@ export default function CreateAgent() {
                                     fullWidth
                                     id="fullName"
                                     label="Full Name"
-                                    value={formData.fullName}
+                                    onChange={(event) => setFullName(event.target.value)}
+                                    value={fullName}
                                     autoFocus
                                 />
                             </Grid>
@@ -107,7 +130,8 @@ export default function CreateAgent() {
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
-                                    value={formData.email}
+                                    onChange={(event) => setEmail(event.target.value)}
+                                    value={email}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -119,7 +143,8 @@ export default function CreateAgent() {
                                     type="password"
                                     id="password"
                                     autoComplete="new-password"
-                                    value={formData.password}
+                                    onChange={(event) => setPassword(event.target.value)}
+                                    value={password}
                                     disabled={!isAdd}
                                 />
                             </Grid>
@@ -131,7 +156,7 @@ export default function CreateAgent() {
                                             labelId="role"
                                             name="role"
                                             id="role"
-                                            value={isAdd ? role : formData.role}
+                                            value={role}
                                             label="Role"
                                             onChange={isAdd ? handleChange : undefined}
                                             disabled={!isAdd}

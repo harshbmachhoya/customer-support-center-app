@@ -1,5 +1,5 @@
 export const baseURLs = {
-    person: 'http://localhost:3000',
+    csc: 'http://localhost:3001',
 };
 
 export const endpoints = {
@@ -7,6 +7,7 @@ export const endpoints = {
     userList: '/user/list',
     updateUser:'/user/update',
     createUser:'/user/create',
+    deleteUser:'/user/delete',
     getRoles:'/user/role',
     caseList:'/case/list',
     createCase:'/case/create',

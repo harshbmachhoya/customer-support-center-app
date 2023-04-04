@@ -3,16 +3,20 @@ import './App.css';
 import Login from './components/User/Login';
 import AgentForm from './components/Agent/AgentForm';
 import ListAgent from './components/Agent/ListAgent';
-import { Route, Routes, Link } from 'react-router-dom';
+import { Route, Routes, Link, Navigate } from 'react-router-dom';
 import useToken from './components/User/hooks/useToken';
 import CaseForm from './components/Case/CaseForm';
 import ListCase from './components/Case/ListCase';
 import { Box } from '@mui/material';
 
 function App() {
-  const { setToken, token, removeToken } = useToken();
+  const { setToken } = useToken();
+  const { token } = useToken();
 
-
+  const logout = () => {
+    localStorage.removeItem('token');
+    return <Navigate replace={true} to='/home' />
+  }
   return (
     <div>
       {/* Navigation */}
@@ -38,7 +42,7 @@ function App() {
         {token?.role.name === 'agent' &&
           <>
             <Link to="/case/list">Case List</Link>
-            <Link to="/login" onClick={() => { removeToken(); }}>Logout</Link>
+            <Link to="/home" onClick={() => { logout(); }}>Logout</Link>
           </>
         }
       </Box>

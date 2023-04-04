@@ -17,19 +17,6 @@ import { ILogin } from '../../interfaces/user';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 
-function Copyright(props: any) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
 const theme = createTheme();
 
 export default function Login({ setToken }: { setToken: (userToken: Record<string, unknown>) => void }) {
@@ -76,7 +63,7 @@ export default function Login({ setToken }: { setToken: (userToken: Record<strin
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Support Agent Sign in
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField

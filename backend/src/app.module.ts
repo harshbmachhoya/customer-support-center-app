@@ -9,7 +9,7 @@ import { CaseModule } from './case/case.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot('mongodb://localhost:27017/csc'),
+    MongooseModule.forRoot(`mongodb://${process.env.DATABASE_HOST}:27017/csc`),
     UserModule,
     CaseModule,
   ],
