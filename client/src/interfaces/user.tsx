@@ -10,3 +10,9 @@ export interface IRoles {
     _id: string;
     name: string;
 }
+
+export interface ILogin {
+    email: string;
+    password: string;
+}
+

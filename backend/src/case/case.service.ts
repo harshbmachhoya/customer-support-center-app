@@ -14,6 +14,7 @@ export class CaseService {
     return this.userModel.findOne(
       {
         case: { $eq: null },
+        'role.name': { $eq: 'agent' },
       },
       { _id: 1, fullName: 1, email: 1 },
     ) as unknown as IUsers;
@@ -22,7 +23,7 @@ export class CaseService {
   async createCase(report: Cases): Promise<Cases | HttpException> {
     try {
       const agent: IUsers = await this.availableAgent();
-      report.supportAgent = agent ? agent : null;
+      report.supportAgent = agent || null;
       const newCase = await new this.caseModel(report).save();
 
       if (agent) {
@@ -56,7 +57,7 @@ export class CaseService {
 
   async listCase(): Promise<Cases[] | HttpException> {
     try {
-      return this.caseModel.find();
+      return this.caseModel.find().sort({ updatedAt: -1 });
     } catch (err) {
       return new HttpException(err, HttpStatus.NOT_IMPLEMENTED);
     }

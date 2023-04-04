@@ -1,34 +1,34 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridColumnVisibilityModel } from '@mui/x-data-grid';
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Button from '@mui/material/Button';
-import { IUser } from '../../interfaces/user';
-import { useFetchAgentList } from './hooks/useFetchAgentList';
+import { useFetchCaseList } from './hooks/useFetchCaseList';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import useToken from '../User/hooks/useToken';
+import { ICase } from '../../interfaces/case';
+import { useMutation } from 'react-query';
+import { caseAPI } from '../../api/API';
 
-export default function ListAgent() {
+export default function ListCase() {
     const navigate = useNavigate();
     const { token } = useToken();
-    if (!token || token.role.name !== 'admin') {
+    if (!token) {
         localStorage.clear();
         navigate('/login');
     }
     const columns: GridColDef[] = [
-        { field: 'fullName', headerName: 'Name', width: 150 },
-        { field: 'email', headerName: 'Email', width: 150 },
+        { field: 'title', headerName: 'Title', width: 150 },
+        { field: 'description', headerName: 'Description', width: 150 },
         {
-            field: 'role', headerName: 'Role', width: 150, valueGetter: (params) => {
+            field: 'supportAgent', headerName: 'Agent', width: 150, valueGetter: (params) => {
                 if (params.value) {
-                    return params.value.name;
+                    return params.value.fullName;
                 }
             }
         },
         {
-            field: 'case', headerName: 'Case Assigned', width: 150, valueGetter: (params) => {
-                return params.value ? 'Yes' : 'No';
+            field: 'isResolved', headerName: 'Case Status', width: 150, valueGetter: (params) => {
+                return params.value ? 'Resolved' : 'Pending';
             }
         },
         {
@@ -36,29 +36,25 @@ export default function ListAgent() {
             renderCell: (params) => {
                 return (
                     <div>
-                        <EditIcon titleAccess='edit' color="primary" cursor={'pointer'} onClick={() => onActionEdit(params.row)} />
-                        <DeleteIcon titleAccess='edit' color="primary" cursor={'pointer'} onClick={() => onActionDelete(params.row._id)} />
-                    </div>
+                        <Button color="primary" disabled={params.row.isResolved} onClick={() => onActionResolve(params.row._id)} >Resolve</Button>
+                    </div >
                 )
             }
         },
     ];
-    const [rows, setRows] = useState<IUser[]>([]);
+    const [rows, setRows] = useState<ICase[]>([]);
     const {
         refetch,
         isLoading,
         data,
-    } = useFetchAgentList();
+    } = useFetchCaseList();
 
-    const onActionEdit = useCallback((row: IUser) => {
-        console.log(row)
-        navigate(`/agent/edit/${row._id}`, { state: row });
-    }, []);
+    const resolve = (caseId: string) => caseAPI.resolveCase(caseId);
+    const { mutateAsync } = useMutation(resolve);
 
-    const onActionDelete = useCallback((id: string) => {
-        fetch(`http://localhost:3000/user/delete?userId=${id}`, {
-            method: 'DELETE',
-        }).then(() => refetch())
+    const onActionResolve = useCallback(async (caseId: string) => {
+        await mutateAsync(caseId);
+        refetch();
     }, []);
 
     useEffect(() => {
@@ -71,11 +67,7 @@ export default function ListAgent() {
         refetch();
     }, [refetch]);
 
-    const handleCreate = useCallback(() => {
-        navigate(`/agent/create`);
-    }, [navigate]);
-
-    const rowId = (rows: IUser) => rows._id;
+    const rowId = (rows: ICase) => rows._id;
     const [columnVisibilityModel,] =
         React.useState<GridColumnVisibilityModel>({
             _id: false,
@@ -97,10 +89,9 @@ export default function ListAgent() {
                 }}
             >
                 <Typography component="h1" variant="h5">
-                    Agent List
+                    Case List
                 </Typography>
                 <br />
-                <Button variant="contained" size='small' onClick={() => handleCreate()}>Add New</Button>
                 <div style={{ height: 400, width: '100%' }}>
                     <DataGrid
                         getRowId={rowId}

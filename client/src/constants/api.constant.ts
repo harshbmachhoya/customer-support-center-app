@@ -3,10 +3,14 @@ export const baseURLs = {
 };
 
 export const endpoints = {
+    login:'/user/login',
     userList: '/user/list',
     updateUser:'/user/update',
     createUser:'/user/create',
-    getRoles:'/user/role'
+    getRoles:'/user/role',
+    caseList:'/case/list',
+    createCase:'/case/create',
+    resolveCase:'case/resolve'
 };
 
 export const defaultPageSize = 1;

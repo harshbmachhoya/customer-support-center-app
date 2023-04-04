@@ -12,6 +12,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { userAPI } from '../../api/API';
+import { ILogin } from '../../interfaces/user';
+import { useMutation } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props: any) {
     return (
@@ -28,14 +32,32 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
-export default function Login() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+export default function Login({ setToken }: { setToken: (userToken: Record<string, unknown>) => void }) {
+    const navigate = useNavigate();
+    const login = (formData: ILogin) => userAPI.login(formData);
+    const { mutateAsync } = useMutation(login);
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        try {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const reqBody = {
+                email: formData.get('email'),
+                password: formData.get('password'),
+            };
+            await mutateAsync(reqBody as unknown as ILogin)
+                .then(({ data }) => {
+                    setToken(data);
+                    data.role.name === 'admin'
+                        ? navigate('/agent/list')
+                        : navigate('/case/list');
+                })
+                .catch(err => {
+                    alert(err.response.data.message)
+                });
+            return;
+        } catch (error) {
+            alert(error)
+        }
     };
 
     return (
@@ -103,7 +125,6 @@ export default function Login() {
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
         </ThemeProvider>
     );

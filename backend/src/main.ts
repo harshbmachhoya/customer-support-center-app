@@ -10,6 +10,6 @@ async function bootstrap() {
       disableErrorMessages: true,
     }),
   );
-  await app.listen(3000);
+  await app.listen(3000).then(() => console.log('Server started!'));
 }
 bootstrap();

@@ -90,7 +90,7 @@ export class UserService {
 
   async listUser(): Promise<Users[] | HttpException> {
     try {
-      return this.userModel.find();
+      return this.userModel.find().sort({ updatedAt: -1 });
     } catch (err) {
       return new HttpException(err, HttpStatus.NOT_IMPLEMENTED);
     }

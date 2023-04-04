@@ -7,26 +7,28 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Form, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
-import { userAPI } from '../../api/userAPI';
+import { userAPI } from '../../api/API';
 import { IUser } from '../../interfaces/user';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import useToken from '../User/hooks/useToken';
 
 const theme = createTheme();
 
 export default function CreateAgent() {
     const navigate = useNavigate();
+    const { token } = useToken();
+    if (!token) {
+        navigate('/login');
+    }
     const [role, setRole] = useState('agent');
     const { state } = useLocation();
     let isAdd = true;
-    let formData = { fullName: '', email: '', password: '', role: '' };
+    let formData = { fullName: null, email: null, password: null, role: null };
     if (state) {
         isAdd = false;
         formData = state;
-        console.log(state.role)
-        formData.role = state.role.name;
-        console.log(formData)
     }
 
     const { data, refetch } = useQuery('getRoles', () => userAPI.getRoles());
@@ -35,10 +37,11 @@ export default function CreateAgent() {
         setRole(event.target.value);
     };
 
-    const createAgent = (formData: IUser) => userAPI.post(formData);
+    const createAgent = (formData: IUser) => userAPI.createUser(formData);
 
     const { mutateAsync } = useMutation(createAgent, {
-        onSuccess: () => {
+        onSuccess: (data) => {
+            console.log('RES', data)
             alert("Agent added successfully!");
             navigate('/agent/list')
         },
@@ -82,7 +85,7 @@ export default function CreateAgent() {
                     <Typography component="h1" variant="h5">
                         {isAdd ? 'Add Agent' : 'Edit Agent'}
                     </Typography>
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField

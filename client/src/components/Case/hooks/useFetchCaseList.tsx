@@ -1,11 +1,11 @@
 import { useQuery, UseQueryResult } from 'react-query';
-import { userAPI } from '../../../api/API';
+import { caseAPI } from '../../../api/API';
 import { endpoints } from '../../../constants/api.constant';
-import { IUser } from '../../../interfaces/user';
+import { ICase } from '../../../interfaces/case';
 
-export const useFetchAgentList = (
-): UseQueryResult<IUser[]> =>
-    useQuery(endpoints.userList, () => userAPI.getUserList(), {
+export const useFetchCaseList = (
+): UseQueryResult<ICase[]> =>
+    useQuery(endpoints.caseList, () => caseAPI.getCaseList(), {
         retry: false,
         retryOnMount: false,
         refetchOnWindowFocus: false,
