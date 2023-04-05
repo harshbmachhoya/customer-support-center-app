@@ -16,6 +16,8 @@ services:
       - /app/node_modules
     depends_on:
       - mongodb
+    environment:
+      DATABASE_HOST: "mongodb"
   client:
     build: ./client
     ports:
